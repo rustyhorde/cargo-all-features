@@ -61,7 +61,8 @@ impl TestRunner {
         match self.cargo_command {
             CargoCommand::Build => print!("    Building "),
             CargoCommand::Check => print!("    Checking "),
-            CargoCommand::Test => print!("     Testing "),
+            CargoCommand::Clippy => print!("   Clippy   "),
+            CargoCommand::Test => print!("     Testing  "),
         }
         stdout.reset().unwrap();
         println!("crate={} features=[{}]", self.crate_name, self.features);
@@ -85,6 +86,7 @@ impl TestRunner {
 pub enum CargoCommand {
     Build,
     Check,
+    Clippy,
     Test,
 }
 
@@ -93,6 +95,7 @@ impl CargoCommand {
         match self {
             CargoCommand::Build => "build",
             CargoCommand::Check => "check",
+            CargoCommand::Clippy => "clippy",
             CargoCommand::Test => "test",
         }
     }
@@ -100,6 +103,7 @@ impl CargoCommand {
         match self {
             CargoCommand::Build => "build-all-features",
             CargoCommand::Check => "check-all-features",
+            CargoCommand::Clippy => "clippy-all-features",
             CargoCommand::Test => "test-all-features",
         }
     }

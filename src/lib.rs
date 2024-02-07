@@ -13,6 +13,7 @@ mod types;
 /// as the first argument
 enum CargoCli {
     #[command(name = "check-all-features")]
+    #[command(name = "clippy-all-features")]
     #[command(alias = "build-all-features")]
     #[command(alias = "test-all-features")]
     Subcommand(Cli),
