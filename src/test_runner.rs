@@ -19,7 +19,7 @@ impl TestRunner {
         cargo_args: &[String],
         working_dir: path::PathBuf,
     ) -> Self {
-        let mut command = process::Command::new(&crate::cargo_cmd());
+        let mut command = process::Command::new(crate::cargo_cmd());
 
         command.arg(cargo_command.get_name());
         command.arg("--no-default-features");
