@@ -14,11 +14,13 @@ jobs:
             archive: zip
           - target: x86_64-unknown-linux-musl
             archive: tar.xz tar.gz tar.zst
+          - target: x86_64-apple-darwin
+            archive: zip
     steps:
       - name: ✅ Checkout ✅
         uses: actions/checkout@v4
       - name: 🧱 Build and Release 🧱
-        uses: rust-build/rust-build.action@v1.4.4
+        uses: rust-build/rust-build.action@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
