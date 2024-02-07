@@ -13,6 +13,14 @@ name = "cargo-build-all-features"
 path = "src/bin/cargo-build-all-features.rs"
 
 [[bin]]
+name = "cargo-check-all-features"
+path = "src/bin/cargo-check-all-features.rs"
+
+[[bin]]
+name = "cargo-clippy-all-features"
+path = "src/bin/cargo-clippy-all-features.rs"
+
+[[bin]]
 name = "cargo-test-all-features"
 path = "src/bin/cargo-test-all-features.rs"
 
