@@ -1,5 +1,8 @@
 use crate::types::FeatureList;
-use std::{error, path, process};
+use std::{
+    error, path,
+    process::{self, Command},
+};
 use termcolor::WriteColor;
 
 pub struct TestRunner {
@@ -17,6 +20,7 @@ impl TestRunner {
         crate_name: String,
         feature_set: FeatureList,
         cargo_args: &[String],
+        last: &[String],
         working_dir: path::PathBuf,
     ) -> Self {
         let mut command = process::Command::new(crate::cargo_cmd());
@@ -35,9 +39,28 @@ impl TestRunner {
             command.arg(&features);
         }
 
-        // Pass through cargo args
-        for arg in cargo_args {
-            command.arg(arg);
+        // If last is empty, we may still have args after -- so parse them out
+        if last.is_empty() {
+            // split on trailing -- for args to be passed to rustc
+            for (idx, val) in cargo_args.split(|v| v == "--").enumerate() {
+                if idx == 0 {
+                    // Add pass through cargo args
+                    for arg in val {
+                        command.arg(arg);
+                    }
+                } else if idx == 1 {
+                    // Add pass through clippy args
+                    Self::add_clippy_args(&mut command, val);
+                }
+            }
+        } else {
+            // Add pass through cargo args
+            for arg in cargo_args {
+                command.arg(arg);
+            }
+
+            // Add pass through clippy args
+            Self::add_clippy_args(&mut command, last);
         }
 
         TestRunner {
@@ -47,6 +70,12 @@ impl TestRunner {
             working_dir,
             cargo_command,
         }
+    }
+
+    fn add_clippy_args(cmd: &mut Command, args: &[String]) {
+        let mut new_args = vec![String::from("--")];
+        new_args.extend(args.iter().cloned());
+        cmd.args(new_args);
     }
 
     pub fn run(&mut self) -> Result<crate::TestOutcome, Box<dyn error::Error>> {

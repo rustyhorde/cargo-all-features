@@ -37,12 +37,11 @@ struct Cli {
     )]
     chunk: usize,
 
-    #[arg(
-        help = "arguments to pass down to cargo",
-        allow_hyphen_values = true,
-        trailing_var_arg = true
-    )]
+    #[arg(help = "arguments to pass down to cargo", allow_hyphen_values = true)]
     cargo_args: Vec<String>,
+
+    #[arg(last = true)]
+    slop: Vec<String>,
 }
 
 pub fn run(cargo_command: test_runner::CargoCommand) -> Result<(), Box<dyn error::Error>> {
@@ -90,7 +89,8 @@ pub fn run(cargo_command: test_runner::CargoCommand) -> Result<(), Box<dyn error
     }
 
     for package in chunk {
-        let outcome = test_all_features_for_package(package, cargo_command, &cli.cargo_args)?;
+        let outcome =
+            test_all_features_for_package(package, cargo_command, &cli.cargo_args, &cli.slop)?;
 
         if let TestOutcome::Fail(exit_status) = outcome {
             process::exit(exit_status.code().unwrap());
@@ -104,6 +104,7 @@ fn test_all_features_for_package(
     package: &cargo_metadata::Package,
     command: crate::test_runner::CargoCommand,
     cargo_args: &[String],
+    last: &[String],
 ) -> Result<TestOutcome, Box<dyn error::Error>> {
     let feature_sets = crate::features_finder::fetch_feature_sets(package);
 
@@ -113,6 +114,7 @@ fn test_all_features_for_package(
             package.name.clone(),
             feature_set.clone(),
             cargo_args,
+            last,
             package
                 .manifest_path
                 .parent()
